@@ -28,7 +28,7 @@ library(lubridate)
 A data frame named steps has been created with three columns.  
 \$steps is an integer representing the number of steps taken in a specified 5-minute interval.  
 \$date is a factor representing the date on which the measurement was taken.  
-\$interval is an integer identifying the time of each 5-minute interval in which the measurement was taken. This column might serve better as a factor.
+\$interval is an integer identifying the time of each 5-minute interval in which the measurement was taken. This column will be converted to a factor.
 
 ```r
 str(steps)
@@ -44,7 +44,7 @@ str(steps)
 ```r
 steps$interval <- as.factor(steps$interval)
 ```
-The first few rows hold no surprises. It appears that there are some NA values that will need to be worked around.
+The first few rows hold no surprises. There are some NA values that will need to be worked around.
 
 ```r
 head(steps)
@@ -59,7 +59,7 @@ head(steps)
 ## 5    NA 2012-10-01       20
 ## 6    NA 2012-10-01       25
 ```
-There are 2304 NA observations out of 17568 total. The maximum 806 steps in a 5-minute interval seems high, 2.7 steps per second for 5 minutes. However, a quick Google check showed that, according to [running.competitor.com](http://running.competitor.com/2014/07/training/make-a-high-stride-rate-work-for-you_54957), "Top-level distance runners typically run at a high number of steps per minute - between 180-200," and "The average recreational runner is closer to 150-170 steps per minute." So this is not an error, merely a measurement of the subject running.
+There are 2304 NA observations out of 17568 total. The maximum 806 steps in a 5-minute interval seems high, 2.7 steps per second for 5 minutes. However, a quick Google check shows that, according to [running.competitor.com](http://running.competitor.com/2014/07/training/make-a-high-stride-rate-work-for-you_54957), "Top-level distance runners typically run at a high number of steps per minute - between 180-200," and "The average recreational runner is closer to 150-170 steps per minute." So this is not an error, merely a measurement of the subject running.
 
 ```r
 summary(steps)
@@ -76,7 +76,7 @@ summary(steps)
 ##  NA's   :2304     (Other)   :15840   (Other):17202
 ```
 
-## What is mean total number of steps taken per day?
+## What is the mean total number of steps taken per day?
 Here we create a summary data frame showing the sum and mean number of steps taken per day. Eight days have summary values of NA. For each of those days, there are no step measurements for any 5-minute period.
 
 ```r
@@ -103,9 +103,9 @@ From the histogram of the daily step count we would expect the mean and the medi
 hist(stepsDay$sum, xlab="Total Steps", main="Histogram of Daily Step Count")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
-In fact, those values are closer to 10800. 
+This expectation is met, those values are close to 10800. 
 
 ```r
 mean(stepsDay$sum, na.rm=TRUE)
@@ -133,7 +133,7 @@ stepsInterval <- steps %>% group_by(interval) %>% summarise_each(funs(sum(.,na.r
 with(stepsInterval, plot(mean,type="l",xlab="Interval", ylab = "Mean Steps", main = "Mean Steps per Interval"))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
 The maximum mean occurs at interval 835. This might correspond to when the subject is preparing for, commuting to, or arriving at work.
 
@@ -158,7 +158,7 @@ sum(is.na(steps$steps))
 ## [1] 2304
 ```
 
-Instead of simply disregarding those values, they can be imputed and included in analysis. Knowledge of the data and how it was collected is helpful in determining how imputed values will be determined. Will they be zeroed out? Will a mean or median value be chosen? In this case, the NA values occur for entire days of measurement. It makes sense to use the median of that 5-minute interval as the imputed value. This way, the overall cycle of the day is maintained.  
+Instead of simply disregarding those values, they can be imputed and included in analysis. Knowledge of the data and how it was collected is helpful in determining how imputed values will be determined. Will they be zeroed out? Will a mean or median value be chosen? In this case, NA values occur for entire days of measurement. It makes sense to use the median of that 5-minute interval as the imputed value. This way, the overall cycle of the day is maintained.  
 We will create a new data frame called stepsImpute from steps.
 
 ```r
@@ -185,7 +185,7 @@ stepsImputeDay <- stepsImpute %>% group_by(date) %>% summarise_each(funs(sum,mea
 hist(stepsImputeDay$sum, xlab="Total Steps", main="Histogram of Daily Step Count (w/ imputed median values)")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
 
 ```r
 mean(stepsImputeDay$sum)
@@ -222,7 +222,7 @@ stepsImputeDay <- stepsImpute %>% group_by(date) %>% summarise_each(funs(sum,mea
 hist(stepsImputeDay$sum, xlab="Total Steps", main="Histogram of Daily Step Count (w/ imputed mean values)")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
 
 ```r
 mean(stepsImputeDay$sum)
@@ -264,6 +264,6 @@ with(stepsImputeInterval, plot(weekday,type="l",xlab="Interval", ylab = "Mean St
 with(stepsImputeInterval, plot(weekend,type="l",xlab="Interval", ylab = "Mean Steps", main = "Weekend"))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-18-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png) 
 
 There appears to be much more walking activity in the late morning and early afternoon hours on the weekends.
